@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+</head>
+
+<body class="p-4">
+    <div class="container mx-auto">
+        <div>
+            <h1 class="text-3xl text-center">Servicios</h1>
+        </div>
+        <div class="p-8">
+            <!-- SERVICIO -->
+            <% data.map(service=> { %>
+                <div class="flex gap-4 items-center mb-2">
+                    <div class="flex gap-4 text-white">
+                        <!-- ACTIVAR O DESACTIVAR -->
+                        <% if (service.status.trim()=="active" ) { %>
+                            <button class="py-1 px-2 bg-gray-600 rounded-md" onclick="acservice()"
+                                disabled>Activar</button>
+                            <button id="id-<%= service.type %>-disable" data-customvalue="<%= service.type %>"
+                                class="py-1 px-2 bg-red-600 rounded-md"
+                                onclick="diservice(this.id, 'id-<%= service.type %>')">Desactivar</button>
+                            <% } else { %>
+                                <button id="id-<%= service.type %>-enable" data-customvalue="<%= service.type %>"
+                                    class="py-1 px-2 bg-green-600 rounded-md"
+                                    onclick="acservice(this.id, 'id-<%= service.type %>')">Activar</button>
+                                <button class="py-1 px-2 bg-gray-600 rounded-md" onclick="diservice()"
+                                    disabled>Desactivar</button>
+                                <% } %>
+                    </div>
+                    <!-- VER EL ESTADO DEL SERVICIO -->
+                    <p class="text-orange-600">
+                        <%= service.name %>:
+                            <% if (service.status.trim()=="active" ) { %>
+                                <span class="text-green-600">
+                                    <%= service.status %>
+                                </span>
+                                <% } else { %>
+                                    <span class="text-red-600">
+                                        <%= service.status %>
+                                    </span>
+                                    <% } %>
+                    </p>
+                    <span class="hidden" id="id-<%= service.type %>">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                    </span>
+                </div>
+                <% }) %>
+        </div>
+    </div>
+</body>
+
+<script>
+
+
+    function diservice(id, idspiner) {
+        const button = document.getElementById(id);
+        const type = button.dataset.customvalue;
+        const spiner = document.getElementById(idspiner);
+        spiner.classList.remove('hidden');
+
+        const data = {
+            command: `sudo service ${type} stop`
+        };
+
+        fetch('/disable', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => location.reload());
+    };
+
+    function acservice(id, idspiner) {
+        const button = document.getElementById(id);
+        const type = button.dataset.customvalue;
+        const spiner = document.getElementById(idspiner);
+        spiner.classList.remove('hidden');
+
+        const data = {
+            command: `sudo service ${type} start`
+        };
+
+        fetch('/disable', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => location.reload());
+    };
+
+</script>
+<script src="https://kit.fontawesome.com/1ca4c8aec6.js" crossorigin="anonymous"></script>
+
+</html>
